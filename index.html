@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TweetRanker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #151225;
+      color: #fff;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      background: #201b3a;
+      color: #fff;
+      border: 1px solid #7161ff;
+    }
+    .btn {
+      background: #7161ff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn:hover {
+      background: #8a7dff;
+    }
+    .result {
+      background: #1e1a33;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+    .rec-item {
+      margin-bottom: 0.5rem;
+      padding-left: 1rem;
+      border-left: 3px solid #7161ff;
+    }
+    label {
+      display: block;
+      margin: 0.25rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 TweetRanker</h1>
+  <p>Score your tweet using Twitter’s algorithm rules</p>
+
+  <textarea id="tweetInput" placeholder="Paste your tweet here..."></textarea>
+  <div style="margin-bottom: 1rem;">
+    <label><input type="checkbox" id="mediaImage"> Includes Image (+0.2)</label>
+    <label><input type="checkbox" id="mediaVideo"> Includes Video (+0.5)</label>
+    <label><input type="checkbox" id="mediaGIF"> Includes GIF (+0.2)</label>
+  </div>
+  <button class="btn" onclick="analyzeTweet()">Analyze Tweet</button>
+
+  <div id="result" class="result" style="display:none;">
+    <h2>Tweet Score: <span id="scoreValue">0</span>/10</h2>
+    <ul id="recommendationsList"></ul>
+  </div>
+
+  <script>
+    function analyzeTweet() {
+      const tweet = document.getElementById("tweetInput").value;
+      const hasImage = document.getElementById("mediaImage").checked;
+      const hasVideo = document.getElementById("mediaVideo").checked;
+      const hasGIF = document.getElementById("mediaGIF").checked;
+
+      let score = 5.0;
+      const recommendations = [];
+
+      if (tweet.length < 200) {
+        score += 0.3;
+        recommendations.push("✅ Concise format detected (+0.3)");
+      }
+
+      const hashtags = tweet.match(/#\w+/g);
+      if (hashtags) {
+        if (hashtags.length > 3) {
+          score -= 0.3;
+          recommendations.push("❌ Too many hashtags (-0.3)");
+        } else {
+          score += 0.3;
+          recommendations.push("✅ Hashtags used effectively (+0.3)");
+        }
+      }
+
+      if (tweet.match(/https?:\/\/\S+/)) {
+        score -= 0.5;
+        recommendations.push("❌ External link detected (-0.5)");
+      }
+
+      const emojis = tweet.match(/[\u{1F600}-\u{1F6FF}]/gu);
+      if (emojis) {
+        if (emojis.length <= 4) {
+          score += 0.2;
+          recommendations.push("✅ Balanced emoji use (+0.2)");
+        } else {
+          score -= 0.2;
+          recommendations.push("❌ Too many emojis (-0.2)");
+        }
+      }
+
+      if (tweet.match(/@\w+/)) {
+        score += 0.3;
+        recommendations.push("✅ Mention detected (+0.3)");
+      }
+
+      if (tweet.match(/(join|discover|explore|check out|learn more|drop your thoughts|vote below|what do you think)/i)) {
+        score += 0.5;
+        recommendations.push("✅ Call-to-action detected (+0.5)");
+      }
+
+      if (tweet.match(/(excited|amazing|game[- ]?changer|powerful|love|awesome|great|next big thing)/i)) {
+        score += 1.0;
+        recommendations.push("✅ Positive sentiment detected (+1.0)");
+      }
+
+      if (hasImage) {
+        score += 0.2;
+        recommendations.push("✅ Image included (+0.2)");
+      }
+      if (hasVideo) {
+        score += 0.5;
+        recommendations.push("✅ Native video included (+0.5)");
+      }
+      if (hasGIF) {
+        score += 0.2;
+        recommendations.push("✅ GIF included (+0.2)");
+      }
+
+      if (tweet.match(/(scam|rug pull|fraud|fake|shady|pump|moon|100x|giveaway now|airdrop now)/i)) {
+        score -= 1.0;
+        recommendations.push("❌ Negative or flagged language (-1.0)");
+      }
+
+      if (tweet === tweet.toUpperCase() && tweet.length > 20) {
+        score -= 0.3;
+        recommendations.push("❌ All caps detected (-0.3)");
+      }
+
+      if (tweet.match(/(click here|you won't believe|insane|viral)/i)) {
+        score -= 0.4;
+        recommendations.push("❌ Clickbait-style language (-0.4)");
+      }
+
+      score = Math.max(0, Math.min(10, score)).toFixed(1);
+
+      document.getElementById("scoreValue").textContent = score;
+      const recList = document.getElementById("recommendationsList");
+      recList.innerHTML = "";
+      recommendations.forEach(rec => {
+        const li = document.createElement("li");
+        li.className = "rec-item";
+        li.textContent = rec;
+        recList.appendChild(li);
+      });
+
+      document.getElementById("result").style.display = "block";
+    }
+  </script>
+</body>
+</html>
