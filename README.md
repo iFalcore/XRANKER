@@ -17,4 +17,4 @@ Score your tweets using real Twitter algorithm factors.
 
 ---
 
-Built with ❤️ by Falcore & ChatGPT
+Built with ❤️ by Falcore
