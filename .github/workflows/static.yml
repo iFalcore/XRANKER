@@ -1,0 +1,562 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Innovate - Tweet Ranking Tool</title>
+  <style>
+    :root {
+      --bg-color: #151225;
+      --text-color: #ffffff;
+      --accent-color: #7161ff;
+      --accent-hover: #8a7dff;
+      --card-bg: rgba(30, 26, 51, 0.7);
+      --button-bg: var(--accent-color);
+      --button-hover: var(--accent-hover);
+      --good: #17BF63;
+      --bad: #E0245E;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      background-image: radial-gradient(circle at 50% 50%, #291f58 0%, var(--bg-color) 70%);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 4rem;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-color);
+      text-decoration: none;
+    }
+    
+    .logo-icon {
+      margin-right: 10px;
+      color: var(--accent-color);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      opacity: 0.9;
+      font-weight: 500;
+      transition: opacity 0.2s ease;
+    }
+    
+    .nav-links a:hover {
+      opacity: 1;
+    }
+    
+    .btn {
+      background-color: var(--button-bg);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-2px);
+    }
+    
+    .btn.secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+    }
+    
+    .btn.secondary:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      padding: 4rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      align-items: center;
+    }
+    
+    .hero-content {
+      max-width: 540px;
+    }
+    
+    .coming-soon {
+      background-color: rgba(113, 97, 255, 0.2);
+      color: var(--accent-color);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    
+    h1 {
+      font-size: 3.75rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+    }
+    
+    h1 span {
+      color: var(--accent-color);
+      display: block;
+    }
+    
+    .hero-description {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 2rem;
+      font-size: 1.125rem;
+      line-height: 1.6;
+    }
+    
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .tweet-container {
+      background-color: var(--card-bg);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .tweet-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .tweet-icon {
+      color: var(--accent-color);
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background-color: rgba(0, 0, 0, 0.2);
+      color: var(--text-color);
+      font-size: 1rem;
+      resize: none;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s ease;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(113, 97, 255, 0.2);
+    }
+    
+    .char-count {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: right;
+      margin-bottom: 1rem;
+    }
+    
+    .highlight {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+    
+    .warning {
+      color: var(--bad);
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.125rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .loading {
+      display: none;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    
+    .loader {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(113, 97, 255, 0.2);
+      border-left-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .result {
+      display: none;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .score {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: var(--accent-color);
+    }
+    
+    .recommendations {
+      margin-top: 1rem;
+    }
+    
+    .recommendations h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .rec-list {
+      list-style: none;
+    }
+    
+    .rec-item {
+      padding: 0.75rem;
+      background-color: rgba(113, 97, 255, 0.1);
+      border-left: 3px solid var(--accent-color);
+      margin-bottom: 0.5rem;
+      border-radius: 0 0.25rem 0.25rem 0;
+      font-size: 0.9rem;
+    }
+    
+    /* Background decorations */
+    .bg-decoration {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.3;
+    }
+    
+    .bg-decoration-1 {
+      background-color: var(--accent-color);
+      width: 300px;
+      height: 300px;
+      top: -100px;
+      left: -100px;
+    }
+    
+    .bg-decoration-2 {
+      background-color: #ff61ab;
+      width: 400px;
+      height: 400px;
+      bottom: -200px;
+      right: -100px;
+    }
+    
+    @media (max-width: 1024px) {
+      nav {
+        padding: 1.5rem 2rem;
+      }
+      
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 2rem;
+      }
+      
+      .hero-content {
+        max-width: 100%;
+      }
+      
+      h1 {
+        font-size: 3rem;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .nav-links {
+        gap: 1rem;
+      }
+      
+      .nav-links .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+      }
+      
+      .hero {
+        padding: 2rem 1.5rem;
+      }
+      
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      .hero-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background decorations -->
+  <div class="bg-decoration bg-decoration-1"></div>
+  <div class="bg-decoration bg-decoration-2"></div>
+
+  <nav>
+    <a href="#" class="logo">
+      <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 7L10 3.5M10 3.5L15 7M10 3.5V12M19 7L14 10.5M14 10.5L9 14M14 10.5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    
+  </a>
+    <div class="nav-links">
+      <a href="#">Features</a>
+      <a href="#">About</a>
+      <a href="#" class="btn">Join Waitlist</a>
+    </div>
+</nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="coming-soon">Coming Soon</div>
+      <h1>GET AHEAD OF YOUR COMPETITORS&nbsp;</h1>
+      <p>&nbsp;</p>
+<p class="hero-description">
+      OPTIMIZE YOUR POSTS TO BE BEST IN CLASS&nbsp; &nbsp; </p>
+<p class="hero-description"> THIS IS A WIP BY FALCORE PLS NO LEAK&nbsp; </p>
+      <div class="hero-buttons">
+        <a href="#" class="btn">Join the Waitlist</a>
+        <a href="#" class="btn secondary">Learn More</a>
+      </div>
+    </div>
+
+    <div class="tweet-container">
+      <h2 class="tweet-title">
+        <svg class="tweet-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        Tweet Ranking Tool
+      </h2>
+      <textarea id="tweetInput" placeholder="What's happening?"></textarea>
+      <div class="char-count">Characters: <span class="highlight" id="charCount">0</span>/280</div>
+		<div style="margin-bottom: 1rem; text-align: left;">
+  <label><input type="checkbox" id="mediaImage">  Image </label><br>
+  <label><input type="checkbox" id="mediaVideo"> Video</label><br>
+  <label><input type="checkbox" id="mediaGIF"> GIF</label></div>
+      <button class="btn submit-btn" id="analyzeBtn" onclick="analyzeTweet()">Analyze Tweet</button>
+      
+      <div class="loading" id="loadingIndicator">
+        <div class="loader"></div>
+      </div>
+      
+      <div class="result" id="result">
+        <div class="score">Tweet Score: <span id="scoreValue">0</span>/10</div>
+        <div class="recommendations">
+          <h3>Recommendations:</h3>
+          <ul class="rec-list" id="recommendationsList">
+            <!-- Recommendations will be inserted here -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+ <script>
+  // Character counter
+  const tweetInput = document.getElementById("tweetInput");
+  const charCount = document.getElementById("charCount");
+
+  tweetInput.addEventListener("input", function () {
+    const count = this.value.length;
+    charCount.textContent = count;
+
+    if (count > 280) {
+      charCount.classList.add("warning");
+    } else {
+      charCount.classList.remove("warning");
+    }
+  });
+
+  // Handle tweet analysis
+  function analyzeTweet() {
+    const tweet = tweetInput.value;
+    if (tweet.trim() === "") {
+      alert("Please enter a tweet to analyze!");
+      return;
+    }
+
+    // Show loading indicator
+    document.getElementById("loadingIndicator").style.display = "flex";
+    document.getElementById("analyzeBtn").style.opacity = "0.5";
+    document.getElementById("analyzeBtn").disabled = true;
+    document.getElementById("result").style.display = "none";
+
+    setTimeout(() => {
+      const mockData = analyzeMockTweet(tweet);
+
+      document.getElementById("loadingIndicator").style.display = "none";
+      document.getElementById("analyzeBtn").style.opacity = "1";
+      document.getElementById("analyzeBtn").disabled = false;
+
+      displayResults(mockData);
+    }, 1500);
+  }
+
+  function analyzeMockTweet(tweet) {
+  let score = 5.0;
+  const recommendations = [];
+
+  // ✅ POSITIVE MODIFIERS
+  if (tweet.length < 200) {
+    score += 0.3;
+    recommendations.push("✅ Concise format detected (+0.3)");
+  }
+
+  const hashtagMatches = tweet.match(/#\w+/g);
+  if (hashtagMatches) {
+    if (hashtagMatches.length > 3) {
+      score -= 0.3;
+      recommendations.push("❌ Too many hashtags (-0.3)");
+    } else {
+      score += 0.3;
+      recommendations.push("✅ Hashtags used effectively (+0.3)");
+    }
+  }
+
+  if (tweet.match(/https?:\/\/\S+/)) {
+    score -= 0.5;
+    recommendations.push("❌ External link detected (-0.5)");
+  }
+
+  const emojis = tweet.match(/[\u{1F600}-\u{1F6FF}]/gu);
+  if (emojis) {
+    if (emojis.length <= 4) {
+      score += 0.2;
+      recommendations.push("✅ Balanced emoji use (+0.2)");
+    } else {
+      score -= 0.2;
+      recommendations.push("❌ Too many emojis (-0.2)");
+    }
+  }
+
+  if (tweet.match(/@\w+/)) {
+    score += 0.3;
+    recommendations.push("✅ Mention detected (+0.3)");
+  }
+
+  if (tweet.match(/(join|discover|explore|check out|learn more|drop your thoughts|vote below|what do you think)/i)) {
+    score += 0.5;
+    recommendations.push("✅ Call-to-action detected (+0.5)");
+  }
+
+  if (tweet.match(/(excited|amazing|game[- ]?changer|powerful|love|awesome|great|next big thing)/i)) {
+    score += 1.0;
+    recommendations.push("✅ Positive sentiment detected (+1.0)");
+  }
+
+  // ✅ MEDIA CHECKBOX MODIFIERS
+  const hasImage = document.getElementById("mediaImage").checked;
+  const hasVideo = document.getElementById("mediaVideo").checked;
+  const hasGIF = document.getElementById("mediaGIF").checked;
+
+  if (hasImage) {
+    score += 0.2;
+    recommendations.push("✅ Image included (+0.2)");
+  }
+
+  if (hasVideo) {
+    score += 0.5;
+    recommendations.push("✅ Native video included (+0.5)");
+  }
+
+  if (hasGIF) {
+    score += 0.2;
+    recommendations.push("✅ GIF included (+0.2)");
+  }
+
+  // 🚫 NEGATIVE MODIFIERS
+  if (tweet.match(/(scam|rug pull|fraud|fake|shady|pump|moon|100x|giveaway now|airdrop now)/i)) {
+    score -= 1.0;
+    recommendations.push("❌ Negative or flagged language (-1.0)");
+  }
+
+  if (tweet === tweet.toUpperCase() && tweet.length > 20) {
+    score -= 0.3;
+    recommendations.push("❌ All caps detected (-0.3)");
+  }
+
+  if (tweet.match(/(click here|you won't believe|insane|viral)/i)) {
+    score -= 0.4;
+    recommendations.push("❌ Clickbait-style language (-0.4)");
+  }
+
+  score = Math.max(0, Math.min(10, score)).toFixed(1);
+
+  return {
+    score: score,
+    recommendations: recommendations
+  };
+}
+
+
+  function displayResults(data) {
+    const result = document.getElementById("result");
+    const scoreValue = document.getElementById("scoreValue");
+    const recommendationsList = document.getElementById("recommendationsList");
+
+    result.style.display = "block";
+    scoreValue.textContent = data.score;
+    recommendationsList.innerHTML = "";
+
+    data.recommendations.forEach((rec) => {
+      const li = document.createElement("li");
+      li.className = "rec-item";
+      li.textContent = rec;
+      recommendationsList.appendChild(li);
+    });
+  }
+</script>
+
+
+</body></html>
